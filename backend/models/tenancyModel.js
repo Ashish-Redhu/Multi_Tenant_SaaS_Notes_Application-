@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const tenancySchema = new mongoose.Schema({
-    tenancyName: String,
+    tenancyName: {type: String, required: true, unique: true},
     plan: {type: String, enum: ["free", "pro"], default: "free"},
 })
 

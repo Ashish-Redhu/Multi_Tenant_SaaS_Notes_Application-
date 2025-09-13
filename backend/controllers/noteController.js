@@ -56,7 +56,7 @@ exports.updateNote = async (req, res)=>{
         const note = await NoteModel.findById(req.params.id).populate("author");
         if(!note) return res.status(404).json({message: "Note not found"});
 
-        if(note.author.tenancy.toString() != req.user.tenancy.toString()){
+        if(note.author.tenancy.toString() != req.user.tenancy._id.toString()){
             return res.status(403).json({message: "Access denied."});
         }
 
@@ -74,14 +74,15 @@ exports.updateNote = async (req, res)=>{
 //5. Delete a note
 exports.deleteNote = async (req, res)=>{
     try {
+        
         const note = await NoteModel.findById(req.params.id).populate("author");
         if (!note) return res.status(404).json({ message: "Note not found" });
 
-        if (note.author.tenancy.toString() !== req.user.tenancy.toString()) {
+        if (note.author.tenancy.toString() !== req.user.tenancy._id.toString()) {
             return res.status(403).json({ message: "Access denied" });
         }
 
-        await note.remove();
+        await note.deleteOne();
         res.json({ message: "Note deleted" });
     } catch (err) {
         res.status(500).json({ message: err.message });

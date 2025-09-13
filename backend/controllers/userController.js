@@ -1,4 +1,4 @@
-const UserModel = require("../models/userModels");
+const UserModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 
 exports.createUser = async (req, res) => {
@@ -17,17 +17,16 @@ exports.createUser = async (req, res) => {
 
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const newUser = new UserModel({
             username,
             email,
             password: hashedPassword,
-            tenancy: req.user.tenacy
+            tenancy: req.user.tenancy
         });
 
         await newUser.save();
         res.status(201).json({ message: "User created successfully", user: newUser });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: `HELLO: ${error.message}` });
     }
 };

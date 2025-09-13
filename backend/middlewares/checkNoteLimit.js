@@ -1,6 +1,6 @@
 // middlewares/checkNoteLimit.js
 const NoteModel = require("../models/noteModel");
-const UserModel = require("../models/userModels");
+const UserModel = require("../models/userModel");
 const TenancyModel = require("../models/tenancyModel");
 
 const checkNoteLimit = async (req, res, next) => {
