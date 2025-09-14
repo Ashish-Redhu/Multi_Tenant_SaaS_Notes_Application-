@@ -151,3 +151,17 @@ You can explore the project using the links below:
 
 * Backend Server: [View here](https://backendnotessaasapp.vercel.app/) – API endpoints and backend functionalities.
 * Frontend Server: [View here](https://frontendnotessaasapp.vercel.app/) – Explore the user interface and interact with the app.
+
+
+## Test Credentials
+
+You can use the following accounts to test the application:
+
+| Role   | Email                | Tenant  |
+|--------|--------------------|---------|
+| Admin  | admin@acme.test     | Acme    |
+| Member | user@acme.test      | Acme    |
+| Admin  | admin@globex.test   | Globex  |
+| Member | user@globex.test    | Globex  |
+
+Remember Admin can invite new members but a normal-member can't. 
