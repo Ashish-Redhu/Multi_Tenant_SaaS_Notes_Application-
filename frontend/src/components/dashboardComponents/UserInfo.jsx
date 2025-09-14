@@ -1,13 +1,15 @@
 import React, { useState, useContext } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../contexts/UserContext';
 
 const UserInfo = ({ user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [formData, setFormData] = useState({username: '', email: '', password: ''});
-    const { totalUsersInTenancy, setTotalUsersInTenancy } = useContext(UserContext);
+  const { setUser, setIsLoggedIn, totalUsersInTenancy, setTotalUsersInTenancy } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const backendURI = import.meta.env.VITE_BACKEND_URI;
 
@@ -28,7 +30,6 @@ const UserInfo = ({ user }) => {
 
   const handleSubmit = (e) =>{
     e.preventDefault();
-    console.log("Invite submitted: ", formData);
 
     const createUser = async()=>{
         const response = await axios.post(`${backendURI}/users/create`, {username: formData.username, email: formData.email, password:formData.password}, {withCredentials: true});
@@ -38,25 +39,26 @@ const UserInfo = ({ user }) => {
     createUser();
   }
 
-
-  const handleUpgrade = async () => {
-    const confirmUpgrade = window.confirm("Are you sure you want to upgrade your tenancy to Pro?");
-    if (!confirmUpgrade) return; // User clicked "No"
-    
+  const handleLogout = async ()=>{
     try {
-      const response = await axios.post(
-        `${backendURI}/tenants/${user.tenancy._id}/upgrade`,
-        {},
-        { withCredentials: true }
-      );
-      alert(response.data.message);
-      // Optionally update tenancy info in UI
-      // e.g., you could refresh user context or local state
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Error upgrading tenancy");
+      await axios.post(`${backendURI}/logout`, {}, { withCredentials: true });
+
+      // Clear frontend state
+      setUser(null);
+      setIsLoggedIn(false);
+
+      // Close sidebar if open
+      setSidebarOpen(false);
+
+      // Optionally redirect to home
+      navigate("/");
+    } 
+    catch (err) {
+      console.error("Logout failed:", err);
+      alert("Failed to log out. Try again.");
     }
-  };
+  }
+
 
   return (
     <>
@@ -103,23 +105,20 @@ const UserInfo = ({ user }) => {
           {user.userType === "admin" && (
             <button
               onClick={handleInvite}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98]"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 hover:cursor-pointer text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98]"
             >
               Invite User
             </button>
           )}
         </div>
-
-        {/* Upgrade Tenancy */}
-        {user.userType === "admin" && user.tenancy.plan !== "pro" && (
-          <button
-            className="flex items-center justify-center text-white p-3 m-4 rounded-md shadow-md font-semibold transition-all duration-200 
-                      !bg-green-800 hover:!bg-green-700 hover:shadow-lg"
-            onClick={handleUpgrade}
-          >
-            Upgrade to Pro
-          </button>
-        )}
+        
+        <button
+          className="flex items-center justify-center text-white p-3 m-4 rounded-md shadow-md font-semibold transition-all duration-200 
+                    !bg-red-800 hover:!bg-red-700 hover:cursor-pointer hover:shadow-lg"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
 
 
       </div>

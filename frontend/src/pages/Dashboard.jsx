@@ -61,15 +61,23 @@ const Dashboard = () => {
     };
   
   // Submit handler: For Create and Update. 
-  const handleSubmit = async () => {
-    if(mode==="create"){
-        const response = await axios.post(`${backendURI}/notes`, {heading, description}, {withCredentials: true});
-        setNotes((prev)=> {
-            const newList = [...prev]; newList.push(response);
-            setNotes(newList);
-            handleCancel(); // To clear the form. 
-        })
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (mode === "create") {
+      try {
+        const response = await axios.post(`${backendURI}/notes`,{ heading, description }, { withCredentials: true });
+        console.log(response);
+
+        // If success
+        setNotes(prev => [...prev, response.data]); // assuming backend returns the created note
+        handleCancel(); // clear form
+      } 
+      catch (err) 
+      {
+        if (err.response) { alert(err.response.data.message); }
+        else { alert("Something went wrong");}
+      }
+  }
     else if(mode=="update" && selectedNoteId){
         try {
             const response = await axios.put(`${backendURI}/notes/${selectedNoteId}`, { heading, description }, { withCredentials: true });
@@ -94,7 +102,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white">
         <div>
-            <HeaderDashboard tenancyName={user.tenancy.tenancyName} tenancyPlan={user.tenancy.plan}/>
+            <HeaderDashboard user={user} />
             <UserInfo user={user}/>
         </div>
         <div className='w-full max-w-2xl mx-auto mt-24'>

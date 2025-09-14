@@ -1,4 +1,3 @@
-import './App.css'
 import { useState, useContext } from "react";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
@@ -6,6 +5,7 @@ import LoginForm from './pages/LoginForm';
 import NoteDetails from './pages/NoteDetails';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
+import './App.css'
 
 function App() {
    const [showLogin, setShowLogin] = useState(false); 
