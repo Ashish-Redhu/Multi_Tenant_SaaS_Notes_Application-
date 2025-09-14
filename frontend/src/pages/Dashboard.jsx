@@ -105,7 +105,7 @@ const Dashboard = () => {
             <HeaderDashboard user={user} />
             <UserInfo user={user}/>
         </div>
-        <div className='w-full max-w-2xl mx-auto mt-24'>
+        <div className='w-full max-w-2xl mx-auto mt-44 md:mt-16'>
             <Form mode={mode} handleSubmit={handleSubmit} handleCancel={handleCancel} heading={heading} setHeading={setHeading} description={description} setDescription={setDescription}/>
         </div>
        
