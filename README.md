@@ -100,13 +100,13 @@ The backend and frontend are fully hosted on Vercel with CORS enabled and a heal
 ```
 
 
-# 📘 Project Setup Guide
+## 📘 Project Setup Guide
 
 This repository contains the **Frontend** and **Backend** code required to run the project locally. Follow the steps below to set up the development environment.
 
 ---
 
-## ✅ Prerequisites
+### Prerequisites
 
 Make sure you have the following installed on your machine:
 
@@ -116,19 +116,19 @@ Make sure you have the following installed on your machine:
 
 ---
 
-## 📥 1. Clone the Repository
+### 📥 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Ashish-Redhu/Multi_Tenant_SaaS_Notes_Application-.git
 cd Multi_Tenant_SaaS_Notes_Application-
 ```
-## ⚙ 2. Frontend Setup
+### ⚙ 2. Frontend Setup
 - &nbsp;Navigate to the frontend folder: ```cd frontend```
 - &nbsp;Install dependencies: ```npm install```
 - &nbsp;Create a .env file in the frontend folder and add the following environment variables: ```VITE_BACKEND_URI=url_of_your_backend_server```
 - Start the frontend development server:```npm run dev```
 
-## ⚙ 3. Backend Setup
+### ⚙ 3. Backend Setup
 
 - &nbsp;Navigate to the backend folder:```cd ../backend```
 - &nbsp;Install dependencies:```npm install```
@@ -145,7 +145,7 @@ NODE_ENV=Development
 You're now ready to explore, develop, and contribute to this project. If you encounter any issues, check that environment variables are set correctly and that MongoDB is running.
 
 
-# 🔗 Links
+## 🔗 Links
 
 You can explore the project using the links below:
 
