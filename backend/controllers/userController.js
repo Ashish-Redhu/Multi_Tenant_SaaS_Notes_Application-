@@ -25,8 +25,28 @@ exports.createUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).json({ message: "User created successfully", user: newUser });
+        const usersInTenant = await UserModel.find({tenancy: req.user.tenancy}).select("_id");
+        res.status(201).json({
+            message: "User created successfully",
+            data: {
+                user: newUser,
+                usersCount: usersInTenant.length
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: `HELLO: ${error.message}` });
     }
 };
+
+
+// exports.getAllUsers = async(req, res)=>{
+//     try{
+//         const usersInTenant = await UserModel.find({tenancy: req.user.tenancy}).select("_id");
+//         res.json({
+//             usersCount: usersInTenant.length
+//         });
+//     }
+//     catch(err){
+//         res.status(500).json({message: `Error while fetching all users: ${err.message}`});
+//     }
+// }

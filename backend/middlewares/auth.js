@@ -4,9 +4,7 @@ const userModel = require("../models/userModel");
 async function verifyToken(req, res, next) {
     // Read token from cookies
     const token = req.cookies?.authToken;
-
     if (!token) { return res.status(401).json({ message: "No token provided" }); }
-
     try {
         const secretKey = process.env.JWT_SECRET;
         const decoded = jwt.verify(token, secretKey); // Throws error if invalid or expired
@@ -19,6 +17,7 @@ async function verifyToken(req, res, next) {
         req.user = user; // Attach user to request
         next();
     } catch (err) {
+         console.log('auth6');
         return res.status(401).json({ message: "Invalid or expired token" });
     }
 }

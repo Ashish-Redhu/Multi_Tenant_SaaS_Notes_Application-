@@ -1,12 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import { GoArrowLeft } from "react-icons/go";
+import axios from 'axios';
+import { UserContext } from '../../contexts/UserContext';
 
 const UserInfo = ({ user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [formData, setFormData] = useState({username: '', email: '', password: ''});
+    const { totalUsersInTenancy, setTotalUsersInTenancy } = useContext(UserContext);
+
+  const backendURI = import.meta.env.VITE_BACKEND_URI;
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleInvite = () => {
+    setShowInviteModal(true);
+  }
+  const handleCloseModal = () =>{
+    setShowInviteModal(false);
+  }
+
+  const handleInputChange = (e) =>{
+    setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
+  }
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+    console.log("Invite submitted: ", formData);
+
+    const createUser = async()=>{
+        const response = await axios.post(`${backendURI}/users/create`, {username: formData.username, email: formData.email, password:formData.password}, {withCredentials: true});
+        setTotalUsersInTenancy(response.data.usersCount);
+        handleCloseModal();
+    }
+    createUser();
+  }
+
+
+  const handleUpgrade = async () => {
+    const confirmUpgrade = window.confirm("Are you sure you want to upgrade your tenancy to Pro?");
+    if (!confirmUpgrade) return; // User clicked "No"
+    
+    try {
+      const response = await axios.post(
+        `${backendURI}/tenants/${user.tenancy._id}/upgrade`,
+        {},
+        { withCredentials: true }
+      );
+      alert(response.data.message);
+      // Optionally update tenancy info in UI
+      // e.g., you could refresh user context or local state
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Error upgrading tenancy");
+    }
   };
 
   return (
@@ -44,15 +93,35 @@ const UserInfo = ({ user }) => {
             <p className="text-gray-300 font-semibold">Tenancy</p>
             <p className="text-white">{user.tenancy.tenancyName} ({user.tenancy.plan})</p>
           </div>
+
+          <div className="bg-gray-800 p-3 rounded-md shadow hover:bg-gray-700 transition">
+            <p className="text-gray-300 font-semibold">Total Users in Tenancy</p>
+            <p className="text-white">{totalUsersInTenancy}</p>
+          </div>
+
+          {/* Invite User button visible only for admins */}
+          {user.userType === "admin" && (
+            <button
+              onClick={handleInvite}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98]"
+            >
+              Invite User
+            </button>
+          )}
         </div>
 
-        {/* Close sidebar button at bottom */}
-        <button 
-          className='flex items-center justify-center text-white bg-gray-700 hover:bg-gray-600 p-2 m-4 rounded-md shadow-md'
-          onClick={toggleSidebar}
-        >
-          <GoArrowLeft className="mr-2"/> Close
-        </button>
+        {/* Upgrade Tenancy */}
+        {user.userType === "admin" && user.tenancy.plan !== "pro" && (
+          <button
+            className="flex items-center justify-center text-white p-3 m-4 rounded-md shadow-md font-semibold transition-all duration-200 
+                      !bg-green-800 hover:!bg-green-700 hover:shadow-lg"
+            onClick={handleUpgrade}
+          >
+            Upgrade to Pro
+          </button>
+        )}
+
+
       </div>
 
       {/* Overlay */}
@@ -61,6 +130,68 @@ const UserInfo = ({ user }) => {
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
           onClick={toggleSidebar}
         ></div>
+      )}
+ 
+      {/* Invite Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-xl font-bold mb-4">Invite New User</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-gray-300 mb-1">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-1">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </>
   );

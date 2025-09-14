@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true); // New loading state
+    const [totalUsersInTenancy, setTotalUsersInTenancy] = useState(0);
     const backendURI = import.meta.env.VITE_BACKEND_URI;
 
     useEffect(() => {
@@ -27,7 +28,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, loading }}>
+        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, loading, totalUsersInTenancy, setTotalUsersInTenancy }}>
             {children}
         </UserContext.Provider>
     );

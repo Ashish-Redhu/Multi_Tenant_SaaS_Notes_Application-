@@ -1,7 +1,7 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 
-export default function PageCard({ heading, description, onEdit, onDelete, onMoreDetails }) {
+export default function PageCard({ mode, heading, description, onEdit, onDelete, onMoreDetails }) {
   // Truncate description to fit approximately 3 lines (around 60-70 words)
   const truncatedDescription = description.split(' ').length > 65
     ? description.split(' ').slice(0, 65).join(' ') + '...'
@@ -28,6 +28,7 @@ export default function PageCard({ heading, description, onEdit, onDelete, onMor
             onClick={onDelete} 
             className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200 group"
             aria-label="Delete"
+            disabled={mode === 'update'}
           >
             <Trash2 size={16} className="text-gray-300 group-hover:text-red-400" />
           </button>
@@ -49,11 +50,12 @@ export default function PageCard({ heading, description, onEdit, onDelete, onMor
 
           {/* Action button */}
           <button
-            onClick={onMoreDetails}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98] mt-auto"
+              onClick={onMoreDetails}
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98] mt-auto"
           >
-            Get more details
+              Get more details
           </button>
+
         </div>
       </div>
     </div>

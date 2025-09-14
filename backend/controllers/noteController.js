@@ -27,7 +27,12 @@ exports.getAllNotes = async (req, res)=>{
         
         //ii. Find all notes whose authors are these. 
         const notes = await NoteModel.find({author: {$in: userIds}});
-        res.json(notes);
+
+        // res.json(notes);
+        res.json({
+            notes: notes, 
+            usersCount: usersInTenant.length
+        });
     }
     catch(err){
         res.status(500).json({message: `Server error in getting all notes: ${err.message}`});
@@ -39,14 +44,15 @@ exports.getNoteById = async (req, res)=>{
     try{
         const note = await NoteModel.findById(req.params.id).populate("author");
         if(!note) return res.status(404).json({message: "Note not found"});
-
-        if(note.author.tenancy.toString() != req.user.tenancy.toString()){
+        
+        if(note.author.tenancy.toString() !== req.user.tenancy._id.toString()){
+            
             return res.status(403).json({message: "Access denied"});
         }
         res.json(note);
     }
     catch(err){
-        res.status(500).json({messaeg: err.message});
+        res.status(500).json({messaeg: `Error fetching a particular note: ${err.message}`});
     }
 }
 
@@ -56,7 +62,7 @@ exports.updateNote = async (req, res)=>{
         const note = await NoteModel.findById(req.params.id).populate("author");
         if(!note) return res.status(404).json({message: "Note not found"});
 
-        if(note.author.tenancy.toString() != req.user.tenancy._id.toString()){
+        if(note.author.tenancy.toString() !== req.user.tenancy._id.toString()){
             return res.status(403).json({message: "Access denied."});
         }
 

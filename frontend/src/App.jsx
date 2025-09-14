@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import LoginForm from './pages/LoginForm';
+import NoteDetails from './pages/NoteDetails';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
 
@@ -36,6 +37,9 @@ function App() {
               path="/dashboard" 
               element={isLoggedIn ? <Dashboard /> : <Navigate to="/" />} 
             />
+           <Route path="/notes/:id" 
+              element={isLoggedIn ? <NoteDetails/> : <Navigate to="/"/>}
+           />
           </Routes>
 
           {showLogin && <LoginForm setShowLogin={setShowLogin} />}

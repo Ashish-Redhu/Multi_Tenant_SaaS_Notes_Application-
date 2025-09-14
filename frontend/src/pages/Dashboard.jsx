@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PageCard from '../components/dashboardComponents/PageCard';
 import HeaderDashboard from '../components/dashboardComponents/HeaderDashboard';
@@ -8,7 +9,8 @@ import Form from '../components/dashboardComponents/Form';
 
 const Dashboard = () => {
   const backendURI = import.meta.env.VITE_BACKEND_URI;
-  const { user, isLoggedIn } = useContext(UserContext);
+  const { user, isLoggedIn, setTotalUsersInTenancy } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const [notes, setNotes] = useState([]);
 
@@ -19,7 +21,8 @@ const Dashboard = () => {
   const fetchNotes = async () => {
     try {
       const response = await axios.get(`${backendURI}/notes`, { withCredentials: true });
-      setNotes(response.data);
+      setNotes(response.data.notes);
+      setTotalUsersInTenancy(response.data.usersCount);
     } catch (err) {
       console.error("Error fetching notes", err);
     }
@@ -33,7 +36,6 @@ const Dashboard = () => {
 
     // Delete handler
     const handleDelete = async (noteId) => {
-        console.log("noteId = ", noteId)
         try {
             await axios.delete(`${backendURI}/notes/${noteId}`, { withCredentials: true });
             setNotes(prev => prev.filter(note => note._id !== noteId));
@@ -80,7 +82,9 @@ const Dashboard = () => {
   };
 
 
-  const handleMoreDetails = () => console.log("More details clicked");
+  const handleMoreDetails = (noteId) => {
+    navigate(`/notes/${noteId}`);
+  }
 
 
    if (!isLoggedIn) {
@@ -104,7 +108,7 @@ const Dashboard = () => {
                 notes.map((note)=>
                     
                     <div key={note._id} className="p-4">
-                        <PageCard heading={note.heading} description={note.description} onEdit={()=> handleEditButtonClick(note)} onDelete={()=> handleDelete(note._id)} onMoreDetails={handleMoreDetails}/>
+                        <PageCard mode={mode} heading={note.heading} description={note.description} onEdit={()=> handleEditButtonClick(note)} onDelete={()=> handleDelete(note._id)} onMoreDetails={()=>handleMoreDetails(note._id)}/>
                     </div>
                 )
             }
