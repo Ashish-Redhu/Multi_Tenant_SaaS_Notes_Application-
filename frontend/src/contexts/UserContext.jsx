@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`${backendURI}/auth`, { withCredentials: true });
+                const response = await axios.get(`${backendURI}/auth`, {}, { withCredentials: true });
                 setUser(response.data.user);
                 setIsLoggedIn(true);
             } catch (error) {
