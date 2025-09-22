@@ -33,10 +33,6 @@ function App() {
               element={isLoggedIn ? <Dashboard/> : <Home setShowLogin={setShowLogin}/>}
             />
 
-            <Route 
-              path="/dashboard" 
-              element={isLoggedIn ? <Dashboard /> : <Navigate to="/" />} 
-            />
            <Route path="/notes/:id" 
               element={isLoggedIn ? <NoteDetails/> : <Navigate to="/"/>}
            />

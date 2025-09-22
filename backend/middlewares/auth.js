@@ -4,7 +4,6 @@ const userModel = require("../models/userModel");
 async function verifyToken(req, res, next) {
     // Read token from cookies
     const token = req.cookies?.authToken;
-    console.log("Cookie token:", token); 
     if (!token) { return res.status(401).json({ message: "No token provided" }); }
     try {
         const secretKey = process.env.JWT_SECRET;

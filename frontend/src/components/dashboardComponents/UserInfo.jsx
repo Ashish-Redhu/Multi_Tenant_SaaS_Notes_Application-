@@ -8,7 +8,7 @@ const UserInfo = ({ user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [formData, setFormData] = useState({username: '', email: '', password: ''});
-  const { setUser, setIsLoggedIn, totalUsersInTenancy, setTotalUsersInTenancy } = useContext(UserContext);
+  const { setUser, setIsLoggedIn, totalUsersInTenancy, setTotalUsersInTenancy, loading, setLoading } = useContext(UserContext);
   const navigate = useNavigate();
 
   const backendURI = import.meta.env.VITE_BACKEND_URI;
@@ -30,17 +30,27 @@ const UserInfo = ({ user }) => {
 
   const handleSubmit = (e) =>{
     e.preventDefault();
-
-    const createUser = async()=>{
-        const response = await axios.post(`${backendURI}/users/create`, {username: formData.username, email: formData.email, password:formData.password}, {withCredentials: true});
-        setTotalUsersInTenancy(response.data.usersCount);
-        handleCloseModal();
+    try{
+      setLoading(true);
+      const createUser = async()=>{
+          const response = await axios.post(`${backendURI}/users/create`, {username: formData.username, email: formData.email, password:formData.password}, {withCredentials: true});
+          setTotalUsersInTenancy(response.data.usersCount);
+          handleCloseModal();
+      }
+      createUser();
     }
-    createUser();
+    catch(err){
+      console.log(err);
+    }
+    finally{
+      setLoading(false);
+    }
+   
   }
 
   const handleLogout = async ()=>{
     try {
+      setLoading(true);
       await axios.post(`${backendURI}/logout`, {}, { withCredentials: true });
 
       // Clear frontend state
@@ -56,6 +66,9 @@ const UserInfo = ({ user }) => {
     catch (err) {
       console.error("Logout failed:", err);
       alert("Failed to log out. Try again.");
+    }
+    finally{
+      setLoading(false);
     }
   }
 
@@ -104,6 +117,7 @@ const UserInfo = ({ user }) => {
           {/* Invite User button visible only for admins */}
           {user.userType === "admin" && (
             <button
+              disabled={loading}
               onClick={handleInvite}
               className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 hover:cursor-pointer text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98]"
             >
@@ -113,6 +127,7 @@ const UserInfo = ({ user }) => {
         </div>
         
         <button
+          disabled={loading}
           className="flex items-center justify-center text-white p-3 m-4 rounded-md shadow-md font-semibold transition-all duration-200 
                     !bg-red-800 hover:!bg-red-700 hover:cursor-pointer hover:shadow-lg"
           onClick={handleLogout}

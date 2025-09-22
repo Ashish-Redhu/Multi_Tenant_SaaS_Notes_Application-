@@ -13,6 +13,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [notes, setNotes] = useState([]);
+  const [localLoading, setLocalLoading] = useState(false);
 
   useEffect(()=>{
     fetchNotes();
@@ -20,11 +21,14 @@ const Dashboard = () => {
 
   const fetchNotes = async () => {
     try {
+      setLocalLoading(true);
       const response = await axios.get(`${backendURI}/notes`, { withCredentials: true });
       setNotes(response.data.notes);
       setTotalUsersInTenancy(response.data.usersCount);
     } catch (err) {
       console.error("Error fetching notes", err);
+    }finally{
+      setLocalLoading(false);
     }
   };
 
@@ -78,7 +82,7 @@ const Dashboard = () => {
         else { alert("Something went wrong");}
       }
   }
-    else if(mode=="update" && selectedNoteId){
+    else if(mode==="update" && selectedNoteId){
         try {
             const response = await axios.put(`${backendURI}/notes/${selectedNoteId}`, { heading, description }, { withCredentials: true });
             setNotes(prev => prev.map(note => note._id === selectedNoteId ? response : note));
@@ -95,7 +99,7 @@ const Dashboard = () => {
   }
 
 
-   if (!isLoggedIn) {
+   if (!isLoggedIn && !user) {
         return <div>Please log in to view the dashboard.</div>;
     }
 
@@ -109,18 +113,29 @@ const Dashboard = () => {
             <Form mode={mode} handleSubmit={handleSubmit} handleCancel={handleCancel} heading={heading} setHeading={setHeading} description={description} setDescription={setDescription}/>
         </div>
        
-
-        <p className='font-bold text-2xl w-full md:w-3/4 p-4 bg-gray-800 rounded-2xl text-white m-3'>Total Notes = {notes.length}</p>
-        <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'>
-            {
-                notes.map((note)=>
-                    
-                    <div key={note._id} className="p-4">
-                        <PageCard mode={mode} heading={note.heading} description={note.description} onEdit={()=> handleEditButtonClick(note)} onDelete={()=> handleDelete(note._id)} onMoreDetails={()=>handleMoreDetails(note._id)}/>
-                    </div>
-                )
-            }
+        {localLoading && 
+        <div className="flex justify-center items-center w-screen h-screen bg-gray-900 text-white">
+              <div className="flex flex-col items-center space-y-4">
+                  <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-lg font-medium">Loading, please wait...</p>
+              </div>
+          </div>
+        }
+        {!localLoading && 
+         <div>
+          <p className='font-bold text-2xl w-full md:w-3/4 p-4 bg-gray-800 rounded-2xl text-white m-3'>Total Notes = {notes.length}</p>
+          <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'>
+              {
+                  notes.map((note)=>
+                      
+                      <div key={note._id} className="p-4">
+                          <PageCard mode={mode} heading={note.heading} description={note.description} onEdit={()=> handleEditButtonClick(note)} onDelete={()=> handleDelete(note._id)} onMoreDetails={()=>handleMoreDetails(note._id)}/>
+                      </div>
+                  )
+              }
+          </div>
         </div>
+        }
     </div>
   );
 }
